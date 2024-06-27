@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Events</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 600px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            font-size: 24px;
+        }
+        .event {
+            background: #f9f9f9;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+        }
+        .event p {
+            margin: 0;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Recent GitHub Events</h1>
+        <div id="events"></div>
+    </div>
+
+    <script>
+        function fetchEvents() {
+            $.get('/webhook/events', function(data) {
+                $('#events').empty();
+                data.forEach(function(event) {
+                    let eventText = '';
+                    if (event.action === 'PUSH') {
+                        eventText = `${event.author} pushed to ${event.to_branch} on ${event.timestamp}`;
+                    } else if (event.action === 'PULL_REQUEST') {
+                        eventText = `${event.author} submitted a pull request from ${event.from_branch} to ${event.to_branch} on ${event.timestamp}`;
+                    } else if (event.action === 'MERGE') {
+                        eventText = `${event.author} merged branch ${event.from_branch} to ${event.to_branch} on ${event.timestamp}`;
+                    }
+                    $('#events').append(`<div class="event"><p>${eventText}</p></div>`);
+                });
+            });
+        }
+
+        setInterval(fetchEvents, 15000);
+        fetchEvents();  
+    </script>
+</body>
+</html>
