@@ -52,9 +52,12 @@
     <script>
         function fetchEvents() {
             $.get('/webhook/events', function(data) {
+                // Clear the existing events
                 $('#events').empty();
+                // Loop through each event and append it to the events div
                 data.forEach(function(event) {
                     let eventText = '';
+                    // Construct the event text based on the action type
                     if (event.action === 'PUSH') {
                         eventText = `${event.author} pushed to ${event.to_branch} on ${event.timestamp}`;
                     } else if (event.action === 'PULL_REQUEST') {
@@ -62,12 +65,15 @@
                     } else if (event.action === 'MERGE') {
                         eventText = `${event.author} merged branch ${event.from_branch} to ${event.to_branch} on ${event.timestamp}`;
                     }
+                    // Append the event to the events div
                     $('#events').append(`<div class="event"><p>${eventText}</p></div>`);
                 });
             });
         }
 
+        // Fetch events every 15 seconds
         setInterval(fetchEvents, 15000);
+        // Fetch events immediately on page load
         fetchEvents();  
     </script>
 </body>
